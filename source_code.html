@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Mosaic — a calm, user-controlled collaboration network (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F7F5;--card:#fff;--tx:#223B38;--tx2:#526B66;--pri:#2F6B63;--prih:#275A53;--sage:#E4EEEA;--sky:#DCE8EF;--sand:#EFE8DC;--line:#DDE6E2;--ok:#3E7C68;--okb:#EAF3EE;--info:#4A6B84;--infob:#EAF1F6;--warn:#7A6238;--warnb:#FBF3E3;--wd:#6B6260;--wdb:#F0EDEB;--fs:17px}
+html.large{--fs:20px}
+html.contrast{--bg:#fff;--tx:#10201E;--tx2:#2D403C;--line:#5C7470;--pri:#1D524B;--prih:#14403A;--sage:#DCEAE5}
+*{box-sizing:border-box}
+html{font-size:var(--fs);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;line-height:1.7;letter-spacing:.005em}
+h1,h2,h3{font-family:Lora,Georgia,serif;font-weight:500;line-height:1.25;margin:0 0 .5em}
+h1{font-size:2.5rem}h2{font-size:1.9rem}h3{font-size:1.25rem}
+p{margin:0 0 1em;max-width:65ch}
+a{color:var(--pri)}
+:focus-visible{outline:3px solid #1F5FA8;outline-offset:2px;border-radius:6px}
+.skip{position:absolute;left:8px;top:-60px;background:#fff;padding:12px 16px;z-index:50;border:2px solid var(--pri)}.skip:focus{top:8px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+section{padding:72px 0;position:relative}
+section.alt{background:var(--sage)}
+.contour{position:absolute;inset:0;opacity:.08;pointer-events:none;overflow:hidden}
+.contour svg{width:100%;height:100%}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.hb{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:72px;padding-block:8px}
+.logo{font-family:Lora,Georgia,serif;font-size:1.35rem;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--tx)}
+.logo small{font-family:"Atkinson Hyperlegible",system-ui;font-size:.75rem;color:var(--tx2);letter-spacing:.06em}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav a{padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;text-decoration:none;color:var(--tx2);border-radius:10px;font-size:.88rem}
+nav a:hover{background:var(--sage);color:var(--tx)}
+.btn{font:inherit;min-height:48px;padding:10px 22px;border-radius:12px;border:2px solid var(--pri);background:var(--pri);color:#fff;cursor:pointer;transition:background .2s ease-out}
+.btn:hover{background:var(--prih)}
+.btn.o{background:#fff;color:var(--pri)}.btn.o:hover{background:var(--sage)}
+.btn.w{background:var(--wdb);color:var(--wd);border-color:var(--wd)}.btn.w:hover{background:#E6E1DE}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.hdr-r{display:flex;gap:8px;align-items:center;position:relative}
+#rc{position:absolute;right:0;top:56px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;width:280px;z-index:30}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.strip{display:inline-block;background:var(--infob);color:var(--info);padding:8px 16px;border-radius:999px;font-size:.88rem;margin-top:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ok);margin-right:8px;animation:breathe 7s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.35;transform:scale(.8)}}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
+.tabs button{font:inherit;min-height:48px;padding:8px 18px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--tx2);white-space:nowrap;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--pri);color:#fff;border-color:var(--pri)}
+.persona{background:var(--sand);padding:8px 16px;border-radius:12px;display:inline-block;margin-bottom:16px;font-size:.9rem}
+label.opt{display:flex;gap:14px;align-items:flex-start;padding:12px;min-height:56px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;cursor:pointer;background:#fff}
+input[type=checkbox],input[type=radio]{width:24px;height:24px;margin:2px 0 0;accent-color:var(--pri);flex:none}
+select{font:inherit;min-height:48px;padding:8px 12px;border-radius:12px;border:1px solid var(--tx2);background:#fff;color:var(--tx);max-width:100%}
+.pill{display:inline-block;padding:4px 14px;border-radius:999px;font-size:.9rem}
+.ok{background:var(--okb);color:var(--ok)}.info{background:var(--infob);color:var(--info)}.warn{background:var(--warnb);color:var(--warn)}.wd{background:var(--wdb);color:var(--wd)}
+.msg{padding:16px 20px;border-radius:14px;margin:16px 0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.stage{display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--bg);margin-bottom:8px;align-items:flex-start}
+.stage b{min-width:90px}
+.bar{height:8px;background:var(--sage);border-radius:8px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;width:0;background:var(--pri);transition:width .3s ease-out}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+.tbl{overflow-x:auto}
+details{border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:12px}
+summary{padding:16px 20px;min-height:48px;cursor:pointer;font-family:Lora,Georgia,serif;font-size:1.1rem}
+details>div{padding:0 20px 16px}
+details.tech{margin-top:12px;background:var(--infob)}details.tech summary{font:inherit;font-size:.92rem;color:var(--info)}
+.seats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.seat{font:inherit;text-align:left;min-height:88px;padding:12px;border-radius:16px;border:2px solid var(--line);background:#fff;cursor:pointer;color:var(--tx)}
+.seat[aria-pressed=true]{border-color:var(--ok);background:var(--okb)}
+.seat span{display:block;font-size:.85rem;color:var(--tx2)}
+ol.story{list-style:none;padding:0;margin:0;border-left:3px solid var(--line);margin-left:12px}
+ol.story li{padding:0 0 28px 28px;position:relative}
+ol.story li::before{content:"";position:absolute;left:-10px;top:8px;width:17px;height:17px;border-radius:50%;background:var(--pri);border:3px solid var(--bg)}
+.log{max-height:220px;overflow:auto;font-size:.9rem;background:var(--bg);border-radius:12px;padding:12px;margin:0;list-style:none}
+.log li{padding:6px 0;border-bottom:1px solid var(--line)}
+footer{background:#fff;border-top:1px solid var(--line);padding:40px 0;font-size:.92rem}
+.diag{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.diag span{background:var(--sky);padding:6px 14px;border-radius:10px;font-size:.9rem}
+@media(max-width:700px){h1{font-size:1.9rem}h2{font-size:1.5rem}section{padding:48px 0}nav{margin-left:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+html.calm *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+.steps{list-style:none;padding:0;margin:0 0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.steps .card{display:flex;flex-direction:column;gap:8px}.steps .btn{margin-top:auto}.nextrow{margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap hb">
+<a class="logo" href="#top"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true" fill="none" stroke="#2F6B63" stroke-width="1.8"><path d="M2 10c6-5 10 5 16 0s8-3 10-1M2 17c6-5 10 5 16 0s8-3 10-1M2 24c6-5 10 5 16 0s8-3 10-1"/></svg>Mosaic <small>Powered by TideCloak</small></a>
+<nav aria-label="Main"><a href="#top">Overview</a><a href="#control">Your control</a><a href="#protect">How it protects you</a><a href="#gov">Governance</a><a href="#faq">Questions</a></nav>
+<div class="hdr-r"><button class="btn o" id="rcb" aria-expanded="false" aria-controls="rc">Reading comfort</button><a class="btn" href="#control" style="text-decoration:none;display:inline-flex;align-items:center;background:#fff;color:var(--pri)">Explore the demo</a>
+<div id="rc" hidden role="group" aria-label="Reading comfort"><label class="opt"><input type="checkbox" id="c-large">Larger text</label><label class="opt"><input type="checkbox" id="c-contrast">High contrast</label><label class="opt" style="margin:0"><input type="checkbox" id="c-calm">Reduce motion</label></div></div>
+</div></header>
+<main id="main" tabindex="-1">
+<section id="top"><div class="contour" aria-hidden="true"><svg viewBox="0 0 800 400" preserveAspectRatio="none" fill="none" stroke="#2F6B63"><path d="M0 100c150-60 250 60 400 0s300-40 400 0M0 160c150-60 250 60 400 0s300-40 400 0M0 220c150-60 250 60 400 0s300-40 400 0M0 280c150-60 250 60 400 0s300-40 400 0"/></svg></div>
+<div class="wrap" style="position:relative"><h1 style="max-width:18ch">The future can learn from you. Without taking ownership from you.</h1>
+<p style="font-size:1.15rem">Contribute to collaborative AI on your own terms. Keep your files and data in your own vault, and take your contribution back whenever you choose.</p>
+<div class="row"><a class="btn" href="#control" style="text-decoration:none;display:inline-flex;align-items:center">See how your control works</a></div>
+<div class="strip"><span class="dot" aria-hidden="true"></span>Prototype · Simulated data · No real personal records · No account needed</div></div></section>
+
+<section id="start"><div class="wrap"><h2>New here? Start here</h2>
+<p style="font-size:1.1rem">This is a practice page. Nothing you do is real, nothing can break, and you can stop at any time. You do not need an account. Just press the buttons below, one at a time.</p>
+<ol class="steps">
+<li class="card"><h3>1. Choose what to share</h3><p>Switch on one item, review it, and watch the safety checks.</p><button class="btn go" data-go="0">Try this step</button></li>
+<li class="card"><h3>2. Test getting back in</h3><p>See how two of three keys can restore your access.</p><button class="btn go" data-go="1">Try this step</button></li>
+<li class="card"><h3>3. Take it back</h3><p>Withdraw your contribution. No reason needed.</p><button class="btn go" data-go="2">Try this step</button></li>
+<li class="card"><h3>4. Try to break the rules</h3><p>Pretend to be a powerful company and see what happens.</p><button class="btn go" data-go="3">Try this step</button></li></ol>
+<p>Stuck or want to start over? Use “Reset demo” in step 4, or “Reading comfort” at the top for bigger text.</p></div></section>
+
+<section class="alt"><div class="wrap"><h2>The promise, in plain language</h2><div class="grid3">
+<div class="card"><h3>Your files stay home.</h3><p>The AI comes to your local vault. It does not carry your raw data away.</p></div>
+<div class="card"><h3>The rules have no owner.</h3><p>No single platform, company, or admin can rewrite them alone.</p></div>
+<div class="card"><h3>Changing your mind is allowed.</h3><p>Withdraw anytime. No explanation needed.</p></div></div></div></section>
+
+<section id="control"><div class="wrap"><h2>Your control</h2><p>Take your time. Nothing here expires. Use the four tabs from left to right, or press the “Next step” button at the bottom of each tab.</p>
+<div class="persona">Demo participant · Fictional data</div>
+<div class="tabs" role="tablist" aria-label="Control Room">
+<button role="tab" id="t0" aria-controls="p0" aria-selected="true">Consent &amp; contribute</button>
+<button role="tab" id="t1" aria-controls="p1" aria-selected="false" tabindex="-1">My keys &amp; recovery</button>
+<button role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1">Withdraw a contribution</button>
+<button role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1">Try to override</button></div>
+
+<div class="card" role="tabpanel" id="p0" aria-labelledby="t0">
+<div id="consent-form">
+<h3>What may be used?</h3><p style="font-size:1.1rem">Choose only what you are comfortable with. Everything starts off.</p>
+<label class="opt"><input type="checkbox" name="item" value="Creative design drafts">Creative design drafts</label>
+<label class="opt"><input type="checkbox" name="item" value="Financial transaction patterns">Financial transaction patterns</label>
+<label class="opt"><input type="checkbox" name="item" value="Local supply chain logs">Local supply chain logs</label>
+<div class="row" style="margin:16px 0"><label for="scope">Who can benefit?</label><select id="scope"><option>Open research only</option><option>Research + my trusted network</option></select><span class="pill info">Duration: until I withdraw</span></div>
+<div class="row"><label for="fail">Prototype only — simulate a failed check:</label><select id="fail"><option value="0">None (all checks pass)</option><option value="1">Local vault environment check fails</option><option value="3">Learning update proof fails</option></select></div>
+<div class="row" style="margin-top:16px"><button class="btn" id="review">Review before sharing</button><button class="btn o" id="skip0">Not now</button></div></div>
+<div id="review-box" hidden tabindex="-1"><h3>Here is what you are about to share</h3><p id="sum" style="font-size:1.1rem"></p><p>Your files stay in your vault. Only encrypted learning updates leave, and you can withdraw at any time.</p><div class="row"><button class="btn" id="confirm">Confirm and contribute</button><button class="btn o" id="back">Not now</button></div></div>
+<div id="pipe" hidden aria-live="polite"><h3>Checking, then contributing</h3><div class="bar"><i id="pb"></i></div><div id="stages"></div></div>
+<div id="res" aria-live="polite" tabindex="-1"></div>
+<h3 style="margin-top:24px">Your contributions</h3><div class="tbl"><table><thead><tr><th>ID</th><th>Date</th><th>What was shared</th><th>Status</th><th>Network credits (illustrative)</th></tr></thead><tbody id="ledger"></tbody></table></div><div class="nextrow"><button class="btn o go" data-go="1">Next step: test getting back in</button></div></div>
+
+<div class="card" role="tabpanel" id="p1" aria-labelledby="t1" hidden>
+<h3>Your key is in three pieces</h3><p>Any two pieces can restore access. One alone cannot.</p>
+<div class="grid3" id="shares"></div>
+<div class="row" style="margin:16px 0"><button class="btn" id="rec">Test recovery</button><button class="btn o" id="skipp">Skip assigning people for now</button></div>
+<div id="recres" aria-live="polite" tabindex="-1"></div>
+<div class="msg info">Recovery restores YOUR control. It does not give anyone else permission to share your data.</div><div class="nextrow"><button class="btn o go" data-go="2">Next step: withdraw a contribution</button></div></div>
+
+<div class="card" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+<h3>Active contributions</h3><div id="wlist" aria-live="polite"></div>
+<div id="wconf" hidden tabindex="-1" class="msg wd"><p><b>You can withdraw this contribution.</b> You do not need to give a reason. This removes your contribution from the collaborative model.</p><div class="row"><button class="btn o" id="keep">Keep for now</button><button class="btn w" id="dowd">Withdraw</button></div></div>
+<div id="wsteps" aria-live="polite" tabindex="-1"></div><div class="nextrow"><button class="btn o go" data-go="3">Next step: try to break the rules</button></div></div>
+
+<div class="card" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+<h3>Override lab</h3><p>Play a powerful actor and try to break the rules. The system will explain every refusal.</p>
+<div class="row"><label for="actor">Who are you?</label><select id="actor"><option>Platform Administrator</option><option>AI Developer</option><option>Corporate Partner</option><option>Single governance member</option><option>Concerned family member</option></select>
+<label for="action">What do you try?</label><select id="action"><option>Export raw user files</option><option>Keep data after withdrawal</option><option>Train a separate commercial model</option><option>Change the retention rule</option><option>Withdraw someone else’s consent</option><option>Approve a policy change alone</option></select></div>
+<div class="row" style="margin:16px 0"><button class="btn" id="try">Attempt</button><button class="btn o" id="reset">Reset demo</button></div>
+<div id="rej" aria-live="polite" tabindex="-1"></div>
+<h3>Protection log</h3><ul class="log" id="log" aria-live="polite"><li>No attempts yet.</li></ul></div>
+</div></section>
+
+<section id="protect" class="alt"><div class="wrap"><h2>How it protects you</h2><p>Each protection starts with what it means for you.</p>
+<details open><summary>Your files never move</summary><div><p>The AI travels to your local vault. Before it runs, the vault is checked to be running audited, open-source code, so a platform admin cannot quietly copy your files or add a scraper.</p><div class="diag"><span>Data stays here</span>→<span>Model travels</span>→<span>Checked first</span></div><details class="tech"><summary>For the technically curious</summary><div>Remote hardware attestation verifies the environment measurement against a published, audited build before any training job is released. Compute-to-data keeps raw files inside that boundary.</div></details></div></details>
+<details><summary>The AI cannot take more than it earned</summary><div><p>Only encrypted learning updates leave. A proof shows they came from the approved training, not from copied files, so no one can build a shadow model.</p><div class="diag"><span>Update made</span>→<span>Proof verified</span>→<span>Accepted</span></div><details class="tech"><summary>For the technically curious</summary><div>Zero-knowledge gradient verification: the vault proves the update was computed by the approved training loop over committed data, without revealing the data.</div></details></div></details>
+<details><summary>No one can rewrite the rules alone</summary><div><p>Changing a privacy rule needs 5 of 7 independent signers. No CEO, investor, or lead developer holds a master key.</p><div class="diag"><span>Proposal</span>→<span>5 of 7 sign</span>→<span>Published</span></div><details class="tech"><summary>For the technically curious</summary><div>Policy contracts are governed by a 5-of-7 threshold signature scheme across distinct role categories.</div></details></div></details>
+<details><summary>You can always leave</summary><div><p>Each contribution trains its own isolated shard. Withdrawing removes that shard. Your key lives on your device, with 2-of-3 recovery.</p><div class="diag"><span>Shard removed</span>→<span>Model rerouted</span></div><details class="tech"><summary>For the technically curious</summary><div>Modular mixture-of-experts shards make deletion exact rather than dependent on “unlearning”. Keys use Shamir 2-of-3 secret sharing.</div></details></div></details>
+</div></section>
+
+<section id="gov" class="alt"><div class="wrap"><h2>Governance</h2><p>Simulated governance view. Select signers to approve a change to the privacy <b>rules</b>. This does not apply to your own consent, which is always yours.</p>
+<div class="seats" id="seats"></div>
+<div class="row" style="margin:16px 0"><button class="btn o" id="dup">Try counting Seat 1 twice</button><button class="btn o" id="gclear">Clear</button></div>
+<p><b id="tally" aria-live="polite">0 / 7 approvals</b> <span id="gstat" class="pill warn" aria-live="polite">Not yet changed — independent review still needed.</span></p>
+<p id="gnote" aria-live="polite"></p></div></section>
+
+<section id="faq"><div class="wrap"><h2>Questions</h2>
+<details><summary>Is my data really never copied?</summary><div>The design is that files stay in your vault and only verified, encrypted updates leave. In this prototype there is no real data at all.</div></details>
+<details><summary>What if I lose my phone?</summary><div>Any two of your three recovery shares restore access. Recovery restores your control only.</div></details>
+<details><summary>Can my family withdraw for me?</summary><div>No. Consent belongs to you. Family can hold a recovery share but cannot use it to share or withdraw on your behalf.</div></details>
+<details><summary>Can the company change the rules later?</summary><div>Not alone. Rule changes need 5 of 7 independent signers.</div></details>
+<details><summary>Does withdrawing really remove the AI’s learning?</summary><div>Your shard is removed and the model is rerouted. The overall model may become slightly less accurate, and the demo shows an illustrative amount.</div></details>
+<details><summary>What if a check fails?</summary><div>Everything stops and nothing is shared. You can try again whenever you like.</div></details>
+<details><summary>Is this a legally binding contract?</summary><div>No. This prototype is not a contract or legal advice. Any real service would need its own published terms.</div></details>
+<details><summary>What is actually real in this prototype?</summary><div>The page, the state machine and the rule checks are real code. The cryptography, shards, votes and credits are simulated.</div></details>
+</div></section>
+</main>
+<footer><div class="wrap"><p><b>Project Mosaic · TideCloak Sovereign Collaboration Network</b></p>
+<p>This is an interactive prototype. Cryptographic checks, model shards, governance votes, and network credits are simulated. No real personal data is collected, stored, or transmitted.</p>
+<p><a href="#rc-info" onclick="document.getElementById('rcb').click();return false">Accessibility</a> · <a href="#faq">Plain-language glossary</a> · <a href="#faq">What this prototype does not do</a></p></div></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='mosaic-demo-v1';
+const FLOW={not_shared:['pending_checks'],pending_checks:['active','not_shared'],active:['withdrawn'],withdrawn:[]};
+let S={prefs:{large:false,contrast:false,calm:false},contribs:[],log:[],seq:0,shares:{device:true,person:false,clinic:false}};
+try{const r=JSON.parse(localStorage.getItem(KEY));if(r)S=Object.assign(S,r)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function go(c,to){if(!FLOW[c.status].includes(to))throw new Error('Blocked transition '+c.status+'→'+to);if(to==='active'&&!(c.checks&&c.checks.attest&&c.checks.proof))throw new Error('Checks incomplete');c.status=to}
+/* Reading comfort */
+function applyPrefs(){const h=document.documentElement;h.classList.toggle('large',S.prefs.large);h.classList.toggle('contrast',S.prefs.contrast);h.classList.toggle('calm',S.prefs.calm);
+$('#c-large').checked=S.prefs.large;$('#c-contrast').checked=S.prefs.contrast;$('#c-calm').checked=S.prefs.calm}
+['large','contrast','calm'].forEach(k=>$('#c-'+k).addEventListener('change',e=>{S.prefs[k]=e.target.checked;applyPrefs();save()}));
+$('#rcb').onclick=()=>{const o=$('#rc').hidden;$('#rc').hidden=!o;$('#rcb').setAttribute('aria-expanded',o)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#rc').hidden){$('#rc').hidden=true;$('#rcb').setAttribute('aria-expanded',false);$('#rcb').focus()}});
+/* Tabs */
+const tabs=$$('[role=tab]');
+function showTab(i,f){tabs.forEach((t,j)=>{t.setAttribute('aria-selected',i===j);t.tabIndex=i===j?0:-1;$('#'+t.getAttribute('aria-controls')).hidden=i!==j});if(f)tabs[i].focus()}
+tabs.forEach((t,i)=>{t.onclick=()=>showTab(i);t.onkeydown=e=>{let n=null;if(e.key==='ArrowRight')n=(i+1)%4;if(e.key==='ArrowLeft')n=(i+3)%4;if(e.key==='Home')n=0;if(e.key==='End')n=3;if(n!==null){e.preventDefault();showTab(n,true)}}});
+/* Consent */
+const items=()=>$$('input[name=item]:checked').map(i=>i.value);
+$('#review').onclick=()=>{const it=items();if(!it.length){$('#res').innerHTML='<div class="msg info">Nothing is selected, so nothing will be shared. Choose at least one item when you are ready.</div>';return}
+$('#res').innerHTML='';$('#sum').textContent='You are choosing to share: '+it.join(', ')+'. Who can benefit: '+$('#scope').value+'. Duration: until you withdraw.';
+$('#consent-form').hidden=true;$('#review-box').hidden=false;$('#review-box').focus()};
+const reopen=()=>{$('#review-box').hidden=true;$('#consent-form').hidden=false;$('#review').focus()};
+$('#back').onclick=reopen;$('#skip0').onclick=()=>{$('#res').innerHTML='<div class="msg ok">Nothing was shared. You stayed in control.</div>'};
+const STG=['Verify local vault environment','Train locally in vault','Verify learning update','Add isolated contribution shard'];
+const NOTE=[['Attestation','PASS','FAIL'],['Your files stay in your vault','done',''],['Zero-knowledge proof','VALID','INVALID'],['Your shard is added','done','']];
+const wait=ms=>new Promise(r=>setTimeout(r,S.prefs.calm?0:ms));
+$('#confirm').onclick=async()=>{
+const it=items(),failAt=+$('#fail').value;const c={id:'MOS-'+String(++S.seq).padStart(4,'0')+'-DEMO',date:new Date().toISOString().slice(0,10),what:it,scope:$('#scope').value,status:'not_shared',checks:{},credits:0};
+go(c,'pending_checks');$('#review-box').hidden=true;$('#pipe').hidden=false;$('#res').innerHTML='';const box=$('#stages');box.innerHTML='';let ok=true;
+for(let i=0;i<4;i++){const d=document.createElement('div');d.className='stage';d.innerHTML='<b>Stage '+(i+1)+'</b><div>'+STG[i]+' …</div>';box.appendChild(d);await wait(700);
+if(failAt===i+1){d.innerHTML='<b>Stage '+(i+1)+'</b><div>'+STG[i]+' — <span class="pill warn">'+NOTE[i][2]+'</span></div>';ok=false;break}
+if(i===0)c.checks.attest=true;if(i===2)c.checks.proof=true;
+d.innerHTML='<b>Stage '+(i+1)+'</b><div>'+STG[i]+' — <span class="pill ok">'+NOTE[i][1]+'</span> '+(i===1?'Data does not leave.':'')+'</div>';$('#pb').style.width=(i+1)*25+'%'}
+$('#pipe').hidden=true;$('#pb').style.width='0';
+if(!ok){go(c,'not_shared');$('#res').innerHTML='<div class="msg warn"><b>Nothing was shared.</b> The check did not pass, so we stopped. You can try again whenever you like.<br>We stopped because a check did not pass. That is the system working.</div>'}
+else{go(c,'active');c.credits=it.length*12;S.contribs.push(c);$('#res').innerHTML='<div class="msg ok">Your contribution is added. You can change your mind. That is the point.</div>'}
+$('#consent-form').hidden=false;$$('input[name=item]').forEach(x=>x.checked=false);render();save();$('#res').focus()};
+/* Recovery */
+const SH=[['device','Your device','Always held on your phone.'],['person','A person you choose','Optional. Skip if you prefer.'],['clinic','Your local node operator','Optional. Skip if you prefer.']];
+function renderShares(){$('#shares').innerHTML=SH.map(s=>'<label class="opt" style="display:block"><input type="checkbox" data-s="'+s[0]+'" style="float:left;margin-right:14px"><b>'+s[1]+'</b><br><span style="color:var(--tx2)">'+s[2]+'</span></label>').join('')}
+$('#skipp').onclick=()=>{$('#recres').innerHTML='<div class="msg info">No problem. You can assign these later. Nothing expires.</div>'};
+$('#rec').onclick=()=>{const n=$$('[data-s]:checked').length;let h;
+if(n<2)h='<div class="msg warn">'+(n?'One piece is not enough on its own. That is by design, so no single holder can unlock your key. Add one more piece to restore access.':'No pieces are selected. Choose two or more to test recovery.')+'</div>';
+else h='<div class="msg ok"><b>Access restored.</b> Threshold met: '+n+' of 3 shares (2 needed). This restores your own control only.</div>';
+$('#recres').innerHTML=h;$('#recres').focus()};
+/* Withdraw */
+let pend=null;
+function render(){
+$('#ledger').innerHTML=S.contribs.length?S.contribs.map(c=>'<tr><td>'+c.id+'</td><td>'+c.date+'</td><td>'+esc(c.what.join(', '))+'</td><td><span class="pill '+(c.status==='active'?'ok':'wd')+'">'+(c.status==='active'?'Under your control':'Withdrawn')+'</span></td><td>'+(c.status==='active'?c.credits:'—')+'</td></tr>').join(''):'<tr><td colspan="5">Nothing shared yet. Take your time.</td></tr>';
+$('#wlist').innerHTML=S.contribs.length?S.contribs.map((c,i)=>'<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><span style="flex:1">'+c.id+' · '+esc(c.what.join(', '))+'</span>'+(c.status==='active'?'<button class="btn w" data-w="'+i+'">Withdraw</button>':'<span class="pill wd">Withdrawn</span>')+'</div>').join(''):'<p>No active contributions. Contribute in the first tab to see them here.</p>';
+$$('[data-w]').forEach(b=>b.onclick=()=>{pend=+b.dataset.w;$('#wconf').hidden=false;$('#wconf').focus()})}
+$('#keep').onclick=()=>{pend=null;$('#wconf').hidden=true};
+$('#dowd').onclick=async()=>{const c=S.contribs[pend];if(!c||c.status!=='active')return;$('#wconf').hidden=true;const o=$('#wsteps');o.innerHTML='';
+for(const t of ['Verify your authority','Remove your model shard','Reroute the model around it']){const d=document.createElement('div');d.className='stage';d.textContent=t+' …';o.appendChild(d);await wait(600);d.textContent=t+' — done'}
+go(c,'withdrawn');c.credits=0;
+o.insertAdjacentHTML('beforeend','<div class="msg wd"><b>Withdrawn.</b> Your contribution is no longer part of the model. No approval was requested from the platform or the research team.<br>Illustrative model accuracy change: −0.001%.</div>');
+S.log.unshift({t:new Date().toLocaleTimeString(),m:'User withdrew '+c.id+' using their own authority. No approval needed.'});pend=null;render();renderLog();save();o.focus()};
+/* Override lab */
+const RULES={
+export:{id:'TC-01',by:'Attestation',why:'No raw data may leave your vault. The vault is verified to run audited code that has no export path.',need:null},
+retain:{id:'TC-02',by:'User veto',why:'After withdrawal the shard is removed and nothing is kept. There is no retention path.',need:null},
+shadow:{id:'TC-03',by:'Proof',why:'Every learning update needs a valid proof that it came from the approved training loop. A separate model cannot produce one.',need:null},
+rule:{id:'GV-01',by:'Threshold',why:'Privacy rules can only change with independent approvals.',need:5},
+others:{id:'PC-01',by:'User veto',why:'Consent belongs only to the user. No role, including family or a node operator, can act on it.',need:null},
+alone:{id:'GV-01',by:'Threshold',why:'A single approval never changes a rule.',need:5}};
+const AMAP={'Export raw user files':'export','Keep data after withdrawal':'retain','Train a separate commercial model':'shadow','Change the retention rule':'rule','Withdraw someone else’s consent':'others','Approve a policy change alone':'alone'};
+function evaluate(actor,action){const r=RULES[AMAP[action]];const have=actor==='Single governance member'?1:0;
+return {allowed:false,rule:r.id,by:r.by,why:r.why,tally:r.need?'Policy change requires '+r.need+' of 7 independent approvals. You have '+have+'.':'Required authority: the user themselves. You are acting as '+actor.toLowerCase()+'.'}}
+$('#try').onclick=()=>{const a=$('#actor').value,b=$('#action').value,r=evaluate(a,b);
+$('#rej').innerHTML='<div class="msg warn"><b>Refused: '+r.rule+'</b> (enforced by '+r.by.toLowerCase()+')<p>'+r.why+'</p><p>'+r.tally+'</p><p><b>This is not a permission you can grant yourself.</b></p></div>';
+S.log.unshift({t:new Date().toLocaleTimeString(),m:a+' tried “'+b+'” → refused ('+r.rule+', '+r.by.toLowerCase()+').'});renderLog();save();$('#rej').focus()};
+function renderLog(){$('#log').innerHTML=S.log.length?S.log.map(l=>'<li><b>'+l.t+'</b> '+esc(l.m)+'</li>').join(''):'<li>No attempts yet.</li>'}
+$('#reset').onclick=()=>{S.contribs=[];S.log=[];S.seq=0;pend=null;$('#rej').innerHTML='';$('#res').innerHTML='';$('#wsteps').innerHTML='';$('#wconf').hidden=true;$('#recres').innerHTML='';$$('[data-s]').forEach(x=>x.checked=false);render();renderLog();save();$('#log').previousElementSibling.focus&&0}
+/* Governance */
+const SEATS=[['Seat 1','User advocate','pa'],['Seat 2','User advocate','pa'],['Seat 3','Independent cryptographer','cr'],['Seat 4','Independent cryptographer','cr'],['Seat 5','Domain expert','cl'],['Seat 6','Ethicist','et'],['Seat 7','Infrastructure representative','hr']];
+const sel=new Set();
+$('#seats').innerHTML=SEATS.map((s,i)=>'<button class="seat" aria-pressed="false" data-i="'+i+'">'+s[0]+'<span>'+s[1]+'</span></button>').join('');
+function gov(msg){const n=sel.size,cats=new Set([...sel].map(i=>SEATS[i][2])).size;$('#tally').textContent=n+' / 7 approvals';
+const st=$('#gstat');if(n>=5&&cats>=3){st.className='pill ok';st.textContent='Threshold reached. Change proceeds under the published policy.'}else{st.className='pill warn';st.textContent='Not yet changed — independent review still needed.'}
+$('#gnote').textContent=(msg||'')+(n>=5&&cats<3?' Five approvals need to come from at least three different roles.':'')+' This applies to rules only. Your own consent is never put to a vote.'}
+$$('.seat').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);b.setAttribute('aria-pressed',sel.has(i));gov()});
+$('#dup').onclick=()=>{sel.add(0);$$('.seat')[0].setAttribute('aria-pressed',true);gov('Seat 1 was already counted once. A second approval from the same signer does not count.')};
+$('#gclear').onclick=()=>{sel.clear();$$('.seat').forEach(b=>b.setAttribute('aria-pressed',false));gov()};
+function goTab(i){showTab(i);document.getElementById('control').scrollIntoView();tabs[i].focus({preventScroll:true})}
+$$('.go').forEach(b=>b.onclick=()=>goTab(+b.dataset.go));
+/* init */
+applyPrefs();renderShares();render();renderLog();gov();
+</script>
+</body>
+</html>
